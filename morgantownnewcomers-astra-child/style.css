@@ -1,0 +1,46 @@
+/**
+Theme Name: Morgantown Newcomers
+Author: Sarah Barnes Web, LLC
+Author URI: https://sarahbarnesweb.com
+Description: Astra is the fastest, fully customizable & beautiful theme suitable for blogs, personal portfolios and business websites. It is very lightweight (less than 50KB on frontend) and offers unparalleled speed. Built with SEO in mind, Astra comes with schema.org code integrated so search engines will love your site. Astra offers plenty of sidebar options and widget areas giving you a full control for customizations. Furthermore, we have included special features and templates so feel free to choose any of your favorite page builder plugin to create pages flexibly. Some of the other features: # WooCommerce Ready # Responsive # Compatible with major plugins # Translation Ready # Extendible with premium addons # Regularly updated # Designed, Developed, Maintained & Supported by Brainstorm Force. Looking for a perfect base theme? Look no further. Astra is fast, fully customizable and beautiful theme!
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: morgantown-newcomers
+Template: astra
+*/
+
+
+.member-nav li.login a {background: #ffcc00; -webkit-border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	margin-bottom:-20px;
+	padding: 5px 25px;
+	height: 50px;
+	box-shadow: 1px 1px 6px #333;
+}
+
+.member-nav ul li.login a {font-family: 'Sanchez', serif; text-transform: uppercase; text-shadow: 1px 1px 1px #333; font-size: 1em;}
+
+
+.main-nav {background: #0063e5; /* Old browsers */
+background: -moz-linear-gradient(top,  #0063e5 0%, #003366 80%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0063e5), color-stop(80%,#003366)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #0063e5 0%,#003366 80%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #0063e5 0%,#003366 80%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #0063e5 0%,#003366 80%); /* IE10+ */
+background: linear-gradient(to bottom,  #0063e5 0%,#003366 80%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0063e5', endColorstr='#003366',GradientType=0 ); /* IE6-9 */
+}
+.main-nav .top-bar-section ul li>a {font-family: 'Sanchez', serif; font-weight: normal; font-size: 1em;}
+.main-nav .top-bar {margin-bottom: 0;}
+.main-nav .top-bar .top-bar-section .has-dropdown:hover > .dropdown, .main-nav .top-bar .top-bar-section .has-dropdown:active > .dropdown {visibility: visible;}
+
+
+
+
+
+
