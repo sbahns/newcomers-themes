@@ -84,4 +84,12 @@ function update_event_information( $post_id, $feed, $entry, $form ){
     }
 }
 
+function bp_members_default_sort_last_name( $query_args ) {
+	$query_args['orderby'] = 'user_lastname'; 
+	$query_args['order'] = 'ASC';
+  
+	return $query_args;
+  }
+  add_filter( 'bp_after_has_members_parse_args', 'bp_members_default_sort_last_name' );
+
 
