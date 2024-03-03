@@ -84,7 +84,58 @@ function update_event_information( $post_id, $feed, $entry, $form ){
     }
 }
 
-// SORT MEMBERS: To make alphabetical sorting the default sorting, use the
+
+// Sort BuddyPress users by last name
+//
+// Use this Gist to sort members alphabetically by last name in the
+// members directory. Follow the instructions below and drop the code
+// in your functions.php or your functions plugin.
+//
+// Updated to work with BP 1.7. See earlier revisions of this gist for
+// earlier versions of BP.
+
+/**
+ * Sort users by last name
+ *
+ * Changes the querystring for the member directory to sort users by their last name
+ *
+ * @param BP_User_Query $bp_user_query
+ */
+function alphabetize_by_last_name( $bp_user_query ) {
+    if ( 'alphabetical' == $bp_user_query->query_vars['type'] )
+        $bp_user_query->uid_clauses['orderby'] = "ORDER BY substring_index(u.display_name, ' ', -1)";
+}
+add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
+
+// To reflect the alphabetical sorting of the member directory, you
+// could also format the names to show the last name first. Here is
+// a helper function to format names as follows: Last, First Middle
+// Etc.
+//
+// To use this function every time a user's name is shown or queried,
+// simply add it as a filter:
+//
+// `add_filter ('bp_get_member_name', 'format_last_name_first' );`
+//
+// To only reformat the name in the member directory, change your
+// members/members-loop.php file in your (child)theme. Look for
+// `bp_member_name()`
+// and replace it with
+// `echo format_last_name_first ( bp_get_member_name() );`
+
+/**
+ * Helper function for formatting a name: Last, First Middle Etc.
+ *
+ * @param string $name
+ * @return string Formatted name
+ */
+function format_last_name_first( $name ) {
+    if ( $first_space = strrpos( $name, " ") )
+        $name = substr( $name, $first_space + 1 ) . ", " . substr( $name, 0, $first_space );
+    return $name;
+}
+
+// BONUS: To make alphabetical sorting the default sorting, use the
 // function below. 
 //
 // In order for this to work properly, `<option value="alphabetical">`
