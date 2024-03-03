@@ -84,12 +84,27 @@ function update_event_information( $post_id, $feed, $entry, $form ){
     }
 }
 
-function bp_members_default_sort_last_name( $query_args ) {
-	$query_args['orderby'] = 'user_lastname'; 
-	$query_args['order'] = 'ASC';
+// Functions.php or custom plugin
+
+function bp_members_default_sort_alphabetical( $sort_options ) {
+
+	$sort_options['default'] = 'alphabetical'; 
+  
+	return $sort_options;
+  
+  }
+  add_filter( 'bp_members_directory_sort_options', 'bp_members_default_sort_alphabetical' );
+  
+  function bp_members_sort_alphabetical( $query_args ) {
+  
+	if ( isset( $query_args['type'] ) && $query_args['type'] == 'alphabetical' ) {
+	  $query_args['orderby'] = 'user_lastname';
+	  $query_args['order'] = 'ASC'; 
+	}
   
 	return $query_args;
+  
   }
-  add_filter( 'bp_after_has_members_parse_args', 'bp_members_default_sort_last_name' );
+  add_filter( 'bp_after_has_members_parse_args', 'bp_members_sort_alphabetical' );
 
 
