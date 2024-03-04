@@ -107,61 +107,6 @@ function my_bp_customizations() {
   }
   add_action( 'bp_init', 'my_bp_customizations' );
 
-
-/**
- * Select Alphabet on Select Box.
- * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
- */
-function yzc_make_alphabet_selected() {
-
-    ?>
-    <script type="text/javascript">
-
-    ( function( $ ) {
-
-    $( document ).ready( function() {
-    
-        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
-
-    });
-
-    })( jQuery );
-    </script>
-    <?php
-
-}
-add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
-
-/**
- * Members Directory - Set Default Filter.
- */
-function yzc_set_default_members_directory_filter( $loop ) {
-
-    if ( bp_is_members_directory() && ! isset( $_POST['filter'] ) ) {
-        $loop['type'] = 'alphabetical';
-    }
-
-    return $loop;
-
-}
-
-add_filter( 'bp_after_has_members_parse_args', 'yzc_set_default_members_directory_filter', 9999 );
-
-/**
- * Members Directory - Set Default Filter.
- */
-function yzc_set_default_groups_directory_filter( $loop ) {
-
-    if ( bp_is_groups_directory() && ! isset( $_POST['filter'] ) ) {
-        $loop['type'] = 'alphabetical';
-    }
-
-    return $loop;
-
-}
-
-add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
-
 /**
  * Sort users by last name
  *
@@ -203,6 +148,38 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
 //     return $name;
 // }
 
+
+
+/**
+ * Members Directory - Set Default Filter.
+ */
+function yzc_set_default_members_directory_filter( $loop ) {
+
+    if ( bp_is_members_directory() && ! isset( $_POST['filter'] ) ) {
+        $loop['type'] = 'alphabetical';
+    }
+
+    return $loop;
+
+}
+
+add_filter( 'bp_after_has_members_parse_args', 'yzc_set_default_members_directory_filter', 9999 );
+
+/**
+ * Members Directory - Set Default Filter.
+ */
+function yzc_set_default_groups_directory_filter( $loop ) {
+
+    if ( bp_is_groups_directory() && ! isset( $_POST['filter'] ) ) {
+        $loop['type'] = 'alphabetical';
+    }
+
+    return $loop;
+
+}
+
+add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
+
 // BONUS: To make alphabetical sorting the default sorting, use the
 // function below. 
 //
@@ -210,18 +187,44 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
 // must be the first option for the members-order-select in
 // members/index.php.
 
-// function sort_members_alphabetically( $qs = '', $object = false ) {
-//     if( $object != 'members' ) //for members only
-//         return $qs;
+function sort_members_alphabetically( $qs = '', $object = false ) {
+    if( $object != 'members' ) //for members only
+        return $qs;
 
-//     if ( empty( $qs ) || ! strpos( $qs, "type=" ) ) {
-//         $args = wp_parse_args($qs);
-//         $args['type'] = 'alphabetical';
-//         $args['action'] = 'alphabetical';
+    if ( empty( $qs ) || ! strpos( $qs, "type=" ) ) {
+        $args = wp_parse_args($qs);
+        $args['type'] = 'alphabetical';
+        $args['action'] = 'alphabetical';
 
-//         $qs = build_query( $args );
-//     }
+        $qs = build_query( $args );
+    }
 
-//     return $qs;
-// }
-// add_action( 'bp_ajax_querystring', 'sort_members_alphabetically', 11, 2 );
+    return $qs;
+}
+add_action( 'bp_ajax_querystring', 'sort_members_alphabetically', 11, 2 );
+
+
+/**
+ * Select Alphabet on Select Box.
+ * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
+ */
+function yzc_make_alphabet_selected() {
+
+    ?>
+    <script type="text/javascript">
+
+    ( function( $ ) {
+
+    $( document ).ready( function() {
+    
+        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
+
+    });
+
+    })( jQuery );
+    </script>
+    <?php
+
+}
+add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
+
