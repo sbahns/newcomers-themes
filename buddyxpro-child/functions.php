@@ -139,3 +139,15 @@ function yzc_set_default_groups_directory_filter( $loop ) {
 
 add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
 
+/**
+ * Sort users by last name
+ *
+ * Changes the querystring for the member directory to sort users by their last name
+ *
+ * @param BP_User_Query $bp_user_query
+ */
+function alphabetize_by_last_name( $bp_user_query ) {
+    if ( 'alphabetical' == $bp_user_query->query_vars['type'] )
+        $bp_user_query->uid_clauses['orderby'] = "ORDER BY substring_index(u.display_name, ' ', -1)";
+}
+add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
