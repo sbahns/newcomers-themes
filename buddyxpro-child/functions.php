@@ -93,11 +93,11 @@ function update_event_information( $post_id, $feed, $entry, $form ){
  *
  * @param BP_User_Query $bp_user_query
  */
-// function alphabetize_by_last_name( $bp_user_query ) {
-//     if ( 'alphabetical' == $bp_user_query->query_vars['type'] )
-//         $bp_user_query->uid_clauses['orderby'] = "ORDER BY substring_index(u.display_name, ' ', -1)";
-// }
-// add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
+function alphabetize_by_last_name( $bp_user_query ) {
+    if ( 'alphabetical' == $bp_user_query->query_vars['type'] )
+        $bp_user_query->uid_clauses['orderby'] = "ORDER BY substring_index(u.display_name, ' ', -1)";
+}
+add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
 
 
 
