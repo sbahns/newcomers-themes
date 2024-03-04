@@ -128,35 +128,35 @@ function yzc_make_alphabet_selected() {
 add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
 
 
-// /**
-//  * Members Directory - Set Default Filter.
-//  */
-// function yzc_set_default_members_directory_filter( $loop ) {
+/**
+ * Members Directory - Set Default Filter.
+ */
+function yzc_set_default_members_directory_filter( $loop ) {
 
-//     if ( bp_is_members_directory() && ! isset( $_POST['filter'] ) ) {
-//         $loop['type'] = 'alphabetical';
-//     }
+    if ( bp_is_members_directory() && ! isset( $_POST['filter'] ) ) {
+        $loop['type'] = 'alphabetical';
+    }
 
-//     return $loop;
+    return $loop;
 
-// }
+}
 
-// add_filter( 'bp_after_has_members_parse_args', 'yzc_set_default_members_directory_filter', 9999 );
+add_filter( 'bp_after_has_members_parse_args', 'yzc_set_default_members_directory_filter', 9999 );
 
-// /**
-//  * Members Directory - Set Default Filter.
-//  */
-// function yzc_set_default_groups_directory_filter( $loop ) {
+/**
+ * Members Directory - Set Default Filter.
+ */
+function yzc_set_default_groups_directory_filter( $loop ) {
 
-//     if ( bp_is_groups_directory() && ! isset( $_POST['filter'] ) ) {
-//         $loop['type'] = 'alphabetical';
-//     }
+    if ( bp_is_groups_directory() && ! isset( $_POST['filter'] ) ) {
+        $loop['type'] = 'alphabetical';
+    }
 
-//     return $loop;
+    return $loop;
 
-// }
+}
 
-// add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
+add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
 
 
 
