@@ -107,56 +107,25 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
  * Select Alphabet on Select Box.
  * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
  */
-function yzc_make_alphabet_selected() {
+// function yzc_make_alphabet_selected() {
 
-    ?>
-    <script type="text/javascript">
+//     ?>
+//     <script type="text/javascript">
 
-    ( function( $ ) {
+//     ( function( $ ) {
 
-    $( document ).ready( function() {
+//     $( document ).ready( function() {
     
-        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
+//         jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
 
-    });
+//     });
 
-    })( jQuery );
-    </script>
-    <?php
+//     })( jQuery );
+//     </script>
+//     <?php
 
-}
-add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
-
-
-/**
- * Members Directory - Set Default Filter.
- */
-function yzc_set_default_members_directory_filter( $loop ) {
-
-    if ( bp_is_members_directory() && ! isset( $_POST['filter'] ) ) {
-        $loop['type'] = 'alphabetical';
-    }
-
-    return $loop;
-
-}
-
-add_filter( 'bp_after_has_members_parse_args', 'yzc_set_default_members_directory_filter', 9999 );
-
-/**
- * Members Directory - Set Default Filter.
- */
-function yzc_set_default_groups_directory_filter( $loop ) {
-
-    if ( bp_is_groups_directory() && ! isset( $_POST['filter'] ) ) {
-        $loop['type'] = 'alphabetical';
-    }
-
-    return $loop;
-
-}
-
-add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
+// }
+// add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
 
 
 
