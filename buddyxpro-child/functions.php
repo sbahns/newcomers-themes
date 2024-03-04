@@ -107,25 +107,25 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
  * Select Alphabet on Select Box.
  * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
  */
-// function yzc_make_alphabet_selected() {
+function yzc_make_alphabet_selected() {
 
-//     ?>
-//     <script type="text/javascript">
+    ?>
+    <script type="text/javascript">
 
-//     ( function( $ ) {
+    ( function( $ ) {
 
-//     $( document ).ready( function() {
+    $( document ).ready( function() {
     
-//         jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
+        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
 
-//     });
+    });
 
-//     })( jQuery );
-//     </script>
-//     <?php
+    })( jQuery );
+    </script>
+    <?php
 
-// }
-// add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
+}
+//add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
 
 
 
