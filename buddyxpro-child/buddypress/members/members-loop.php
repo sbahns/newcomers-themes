@@ -28,7 +28,7 @@ $buddyx_enabled_joined_date   = get_theme_mod( 'buddyx_enabled_member_directory_
 	<p class="current-member-type"><?php bp_current_member_type_message(); ?></p>
 <?php endif; ?>
 
-<?php if (bp_has_members(bp_ajax_querystring('members') . '&populate_extras&type=alphabetical')) : ?>
+<?php if (bp_has_members(bp_ajax_querystring('members') )) : ?>
 
 	<?php bp_nouveau_pagination( 'top' ); ?>
 
