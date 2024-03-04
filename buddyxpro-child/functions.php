@@ -84,28 +84,7 @@ function update_event_information( $post_id, $feed, $entry, $form ){
     }
 }
 
-// BuddyPress Customizations to pull first name and last name from xProfile
-function my_bp_customizations() {
-
-	// Display first and last name
-	function bp_member_name_first_last() {
-	  global $members_template;
-  
-	  $first_name = bp_get_profile_field_data('field=First Name', $members_template->member->id ); 
-	  $last_name = bp_get_profile_field_data('field=Last Name', $members_template->member->id );
-  
-	  echo $first_name . ' ' . $last_name;
-	}
-  
-	// Replace default function
-	function replace_bp_member_name() {
-	  remove_action( 'bp_member_name', 'bp_member_name' );
-	  add_action( 'bp_member_name', 'bp_member_name_first_last', 10, 1 ); 
-	}
-	add_action( 'bp_init', 'replace_bp_member_name' );
-  
-  }
-  add_action( 'bp_init', 'my_bp_customizations' );
+///// MEMBER DIRECTORY
 
 /**
  * Sort users by last name
@@ -114,40 +93,39 @@ function my_bp_customizations() {
  *
  * @param BP_User_Query $bp_user_query
  */
-function alphabetize_by_last_name( $bp_user_query ) {
-    if ( 'alphabetical' == $bp_user_query->query_vars['type'] )
-        $bp_user_query->uid_clauses['orderby'] = "ORDER BY substring_index(u.display_name, ' ', -1)";
-}
-add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
+// function alphabetize_by_last_name( $bp_user_query ) {
+//     if ( 'alphabetical' == $bp_user_query->query_vars['type'] )
+//         $bp_user_query->uid_clauses['orderby'] = "ORDER BY substring_index(u.display_name, ' ', -1)";
+// }
+// add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
 
-// To reflect the alphabetical sorting of the member directory, you
-// could also format the names to show the last name first. Here is
-// a helper function to format names as follows: Last, First Middle
-// Etc.
-//
-// To use this function every time a user's name is shown or queried,
-// simply add it as a filter:
-//
-// `add_filter ('bp_get_member_name', 'format_last_name_first' );`
-//
-// To only reformat the name in the member directory, change your
-// members/members-loop.php file in your (child)theme. Look for
-// `bp_member_name()`
-// and replace it with
-// `echo format_last_name_first ( bp_get_member_name() );`
+
+
+///////////////////////// Youzify Customization
 
 /**
- * Helper function for formatting a name: Last, First Middle Etc.
- *
- * @param string $name
- * @return string Formatted name
+ * Select Alphabet on Select Box.
+ * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
  */
-// function format_last_name_first( $name ) {
-//     if ( $first_space = strrpos( $name, " ") )
-//         $name = substr( $name, $first_space + 1 ) . ", " . substr( $name, 0, $first_space );
-//     return $name;
-// }
+function yzc_make_alphabet_selected() {
 
+    ?>
+    <script type="text/javascript">
+
+    ( function( $ ) {
+
+    $( document ).ready( function() {
+    
+        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
+
+    });
+
+    })( jQuery );
+    </script>
+    <?php
+
+}
+add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
 
 
 /**
@@ -180,51 +158,6 @@ function yzc_set_default_groups_directory_filter( $loop ) {
 
 add_filter( 'bp_after_has_groups_parse_args', 'yzc_set_default_groups_directory_filter', 9999 );
 
-// BONUS: To make alphabetical sorting the default sorting, use the
-// function below. 
-//
-// In order for this to work properly, `<option value="alphabetical">`
-// must be the first option for the members-order-select in
-// members/index.php.
-
-function sort_members_alphabetically( $qs = '', $object = false ) {
-    if( $object != 'members' ) //for members only
-        return $qs;
-
-    if ( empty( $qs ) || ! strpos( $qs, "type=" ) ) {
-        $args = wp_parse_args($qs);
-        $args['type'] = 'alphabetical';
-        $args['action'] = 'alphabetical';
-
-        $qs = build_query( $args );
-    }
-
-    return $qs;
-}
-add_action( 'bp_ajax_querystring', 'sort_members_alphabetically', 11, 2 );
 
 
-/**
- * Select Alphabet on Select Box.
- * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
- */
-function yzc_make_alphabet_selected() {
-
-    ?>
-    <script type="text/javascript">
-
-    ( function( $ ) {
-
-    $( document ).ready( function() {
-    
-        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
-
-    });
-
-    })( jQuery );
-    </script>
-    <?php
-
-}
-add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
-
+///////////////////////////////
