@@ -47,7 +47,11 @@ if ( ! is_front_page() && is_home() ) {
 
 if ( bp_is_members_directory() ) {
 	$title = __('Members', 'buddyx');
-  }
+}
+
+if ( bp_is_groups_directory() ) {
+	$title = __('Groups', 'buddyx');
+}
 
 if ( is_search() ) {
 	$title = __( 'Search results for', 'buddyxpro' ) . get_search_query();
