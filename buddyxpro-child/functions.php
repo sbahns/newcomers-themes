@@ -197,11 +197,11 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
  * @param string $name
  * @return string Formatted name
  */
-function format_last_name_first( $name ) {
-    if ( $first_space = strrpos( $name, " ") )
-        $name = substr( $name, $first_space + 1 ) . ", " . substr( $name, 0, $first_space );
-    return $name;
-}
+// function format_last_name_first( $name ) {
+//     if ( $first_space = strrpos( $name, " ") )
+//         $name = substr( $name, $first_space + 1 ) . ", " . substr( $name, 0, $first_space );
+//     return $name;
+// }
 
 // BONUS: To make alphabetical sorting the default sorting, use the
 // function below. 
@@ -210,18 +210,18 @@ function format_last_name_first( $name ) {
 // must be the first option for the members-order-select in
 // members/index.php.
 
-function sort_members_alphabetically( $qs = '', $object = false ) {
-    if( $object != 'members' ) //for members only
-        return $qs;
+// function sort_members_alphabetically( $qs = '', $object = false ) {
+//     if( $object != 'members' ) //for members only
+//         return $qs;
 
-    if ( empty( $qs ) || ! strpos( $qs, "type=" ) ) {
-        $args = wp_parse_args($qs);
-        $args['type'] = 'alphabetical';
-        $args['action'] = 'alphabetical';
+//     if ( empty( $qs ) || ! strpos( $qs, "type=" ) ) {
+//         $args = wp_parse_args($qs);
+//         $args['type'] = 'alphabetical';
+//         $args['action'] = 'alphabetical';
 
-        $qs = build_query( $args );
-    }
+//         $qs = build_query( $args );
+//     }
 
-    return $qs;
-}
-add_action( 'bp_ajax_querystring', 'sort_members_alphabetically', 11, 2 );
+//     return $qs;
+// }
+// add_action( 'bp_ajax_querystring', 'sort_members_alphabetically', 11, 2 );
