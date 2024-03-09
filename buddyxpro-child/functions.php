@@ -101,32 +101,74 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
 
 
 
-///////////////////////// Youzify Customization
+///////////////////////// wp-members profile sync
 
 /**
- * Select Alphabet on Select Box.
- * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
+ * Map xProfile fields to WP-Members fields during registration.
+ *
+ * @param array $fields     WP-Members fields.
+ * @param array $userdata   User data from the registration form.
+ *
+ * @return array            Mapped fields.
  */
-function yzc_make_alphabet_selected() {
+function my_map_xprofile_fields($fields, $userdata) {
+    // Get xProfile field data
+    $xprofile_data = isset($_POST['xprofile-data']) ? $_POST['xprofile-data'] : array();
 
-    ?>
-    <script type="text/javascript">
+    // Get all xProfile fields
+    $xprofile_groups = bp_xprofile_get_groups();
+    foreach ($xprofile_groups as $group) {
+        $xprofile_fields = bp_xprofile_fields_by_group($group->id);
+        foreach ($xprofile_fields as $field) {
+            // Map xProfile field to WP-Members field
+            $fields[$field->name] = isset($xprofile_data[$field->id]) ? $xprofile_data[$field->id] : '';
+        }
+    }
 
-    ( function( $ ) {
-
-    $( document ).ready( function() {
-    
-        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
-
-    });
-
-    })( jQuery );
-    </script>
-    <?php
-
+    return $fields;
 }
-//add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
+add_filter('wpmem_register_data', 'my_map_xprofile_fields', 10, 2);
 
+/**
+ * Save xProfile data after successful registration.
+ *
+ * @param int    $user_id    ID of the newly registered user.
+ * @param array  $userdata   User data from the registration form.
+ * @param bool   $new_user   True if a new user was registered.
+ */
+function my_save_xprofile_data($user_id, $userdata, $new_user) {
+    if ($new_user) {
+        // Get xProfile field data
+        $xprofile_data = isset($_POST['xprofile-data']) ? $_POST['xprofile-data'] : array();
 
+        // Save xProfile data for the new user
+        foreach ($xprofile_data as $field_id => $field_value) {
+            xprofile_set_field_data($field_id, $user_id, $field_value);
+        }
+    }
+}
+add_action('wpmem_register_successful', 'my_save_xprofile_data', 10, 3);
+
+/**
+ * Add xProfile fields to the WP-Members registration form.
+ *
+ * @param array $form_rows   WP-Members form rows.
+ *
+ * @return array             Updated form rows with xProfile fields.
+ */
+function my_add_xprofile_fields($form_rows) {
+    // Get xProfile fields markup
+    $xprofile_fields = '';
+    $xprofile_groups = bp_xprofile_get_groups();
+    foreach ($xprofile_groups as $group) {
+        $xprofile_fields .= bp_get_template_part('members/members-xprofile-fields');
+    }
+
+    // Inject xProfile fields into the form
+    $form_rows['my_custom_fields'] = $xprofile_fields;
+
+    return $form_rows;
+}
+add_filter('wpmem_register_form_rows', 'my_add_xprofile_fields');
 
 ///////////////////////////////
