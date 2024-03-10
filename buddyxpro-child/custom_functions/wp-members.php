@@ -10,23 +10,23 @@
  *
  * @return array            Mapped fields.
  */
-function my_map_xprofile_fields($fields, $userdata) {
-    // Get xProfile field data
-    $xprofile_data = isset($_POST['xprofile-data']) ? $_POST['xprofile-data'] : array();
+// function my_map_xprofile_fields($fields, $userdata) {
+//     // Get xProfile field data
+//     $xprofile_data = isset($_POST['xprofile-data']) ? $_POST['xprofile-data'] : array();
 
-    // Get all xProfile fields
-    $xprofile_groups = bp_xprofile_get_groups();
-    foreach ($xprofile_groups as $group) {
-        $xprofile_fields = bp_xprofile_fields_by_group($group->id);
-        foreach ($xprofile_fields as $field) {
-            // Map xProfile field to WP-Members field
-            $fields[$field->name] = isset($xprofile_data[$field->id]) ? $xprofile_data[$field->id] : '';
-        }
-    }
+//     // Get all xProfile fields
+//     $xprofile_groups = bp_xprofile_get_groups();
+//     foreach ($xprofile_groups as $group) {
+//         $xprofile_fields = bp_xprofile_fields_by_group($group->id);
+//         foreach ($xprofile_fields as $field) {
+//             // Map xProfile field to WP-Members field
+//             $fields[$field->name] = isset($xprofile_data[$field->id]) ? $xprofile_data[$field->id] : '';
+//         }
+//     }
 
-    return $fields;
-}
-add_filter('wpmem_register_data', 'my_map_xprofile_fields', 10, 2);
+//     return $fields;
+// }
+// add_filter('wpmem_register_data', 'my_map_xprofile_fields', 10, 2);
 
 /**
  * Save xProfile data after successful registration.
@@ -35,18 +35,18 @@ add_filter('wpmem_register_data', 'my_map_xprofile_fields', 10, 2);
  * @param array  $userdata   User data from the registration form.
  * @param bool   $new_user   True if a new user was registered.
  */
-function my_save_xprofile_data($user_id, $userdata, $new_user) {
-    if ($new_user) {
-        // Get xProfile field data
-        $xprofile_data = isset($_POST['xprofile-data']) ? $_POST['xprofile-data'] : array();
+// function my_save_xprofile_data($user_id, $userdata, $new_user) {
+//     if ($new_user) {
+//         // Get xProfile field data
+//         $xprofile_data = isset($_POST['xprofile-data']) ? $_POST['xprofile-data'] : array();
 
-        // Save xProfile data for the new user
-        foreach ($xprofile_data as $field_id => $field_value) {
-            xprofile_set_field_data($field_id, $user_id, $field_value);
-        }
-    }
-}
-add_action('wpmem_register_successful', 'my_save_xprofile_data', 10, 3);
+//         // Save xProfile data for the new user
+//         foreach ($xprofile_data as $field_id => $field_value) {
+//             xprofile_set_field_data($field_id, $user_id, $field_value);
+//         }
+//     }
+// }
+// add_action('wpmem_register_successful', 'my_save_xprofile_data', 10, 3);
 
 /**
  * Add xProfile fields to the WP-Members registration form.
@@ -55,20 +55,20 @@ add_action('wpmem_register_successful', 'my_save_xprofile_data', 10, 3);
  *
  * @return array Updated form rows with xProfile fields.
  */
-function my_add_xprofile_fields($form_rows) {
-    // Get xProfile fields markup
-    $xprofile_fields = '';
-    $xprofile_groups = bp_xprofile_get_groups();
-    foreach ($xprofile_groups as $group) {
-        $xprofile_fields .= bp_get_template_part('members/members-xprofile-fields');
-    }
+// function my_add_xprofile_fields($form_rows) {
+//     // Get xProfile fields markup
+//     $xprofile_fields = '';
+//     $xprofile_groups = bp_xprofile_get_groups();
+//     foreach ($xprofile_groups as $group) {
+//         $xprofile_fields .= bp_get_template_part('members/members-xprofile-fields');
+//     }
 
-    // Inject xProfile fields into the form
-    $form_rows['my_custom_fields'] = $xprofile_fields;
+//     // Inject xProfile fields into the form
+//     $form_rows['my_custom_fields'] = $xprofile_fields;
 
-    return $form_rows;
-}
-add_filter('wpmem_register_form_rows', 'my_add_xprofile_fields');
+//     return $form_rows;
+// }
+// add_filter('wpmem_register_form_rows', 'my_add_xprofile_fields');
 
 ///////////////////////////////
 
