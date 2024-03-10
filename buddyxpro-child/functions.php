@@ -101,7 +101,36 @@ add_action ( 'bp_pre_user_query', 'alphabetize_by_last_name' );
 
 
 
-///////////////////////// wp-members profile sync
+///////////////////////// Member Directory Customization (from Youzify)
+
+/**
+ * Select Alphabet on Select Box.
+ * https://gist.github.com/KaineLabs/4795fa7a6725389b246c9b4020491798#file-yzc_make_alphabet_selected-php
+ */
+function yzc_make_alphabet_selected() {
+
+    ?>
+    <script type="text/javascript">
+
+    ( function( $ ) {
+
+    $( document ).ready( function() {
+    
+        jQuery( '#members-order-by option[value="alphabetical"], #groups-order-by option[value="alphabetical"]' ).attr( 'selected', true ).trigger( 'change');
+
+    });
+
+    })( jQuery );
+    </script>
+    <?php
+
+}
+//add_action( 'wp_footer', 'yzc_make_alphabet_selected' );
+
+///////////////////////////////
+
+
+///////////////////////// WP-Members profile sync
 
 /**
  * Map xProfile fields to WP-Members fields during registration.
@@ -154,7 +183,7 @@ add_action('wpmem_register_successful', 'my_save_xprofile_data', 10, 3);
  *
  * @param array $form_rows   WP-Members form rows.
  *
- * @return array             Updated form rows with xProfile fields.
+ * @return array Updated form rows with xProfile fields.
  */
 function my_add_xprofile_fields($form_rows) {
     // Get xProfile fields markup
