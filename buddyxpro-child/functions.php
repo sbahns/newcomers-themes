@@ -262,3 +262,63 @@ function yzc_sync_username_and_name_fields() {
 }
 add_action( 'wp_head', 'yzc_sync_username_and_name_fields' );
 ///////////////////////////
+
+
+/** WP Members Function
+ * A drop-in code snippet to set all users on the site as 
+ * "activated" (when using the plugin's moderated registration
+ * setting). All existing users on the site will be set as 
+ * active without affecting passwords and no email will be sent.
+ *
+ * To Use:
+ * 1. Save the code snippet to your theme's functions.php
+ * 2. Go to Tools > Activate All Users.
+ * 3. Follow prompts on screen.
+ * 4. Remove the code snippet when completed.
+ */
+add_action( 'init', 'activate_all_users_init' );
+function activate_all_users_init() {
+    global $wpmem;
+    $wpmem->activate_all_users = New My_Activate_All_Users_Class();
+}
+class My_Activate_All_Users_Class {
+ 
+    function __construct() {
+        add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+    }
+
+    function admin_menu() {
+        $hook = add_management_page( 'Activate All Users Page', 'Activate All Users', 'edit_users', 'activate-all-users', array( $this, 'admin_page' ), '' );
+        add_action( "load-$hook", array( $this, 'admin_page_load' ) );
+    }
+
+    function admin_page_load() {
+        global $activate_all_complete;
+        $activate_all_complete = false;
+        if ( isset( $_GET['page'] ) && 'activate-all-users' == $_GET['page'] && isset( $_POST['activate-all-confirm'] ) && 1 == $_POST['activate-all-confirm'] ) {
+            $users = get_users( array( 'fields'=>'ID' ) );
+            foreach ( $users as $user_id ) {
+                update_user_meta( $user_id, 'active', 1 );
+                wpmem_set_user_status( $user_id, 0 );
+            }
+            $activate_all_complete = true;
+        }
+    }
+
+    function admin_page() {
+        global $activate_all_complete;
+        echo "<h2>Activate All Users</h2>";
+        if ( $activate_all_complete ) {
+            echo '<p>All users were activated.<br />';
+            echo 'You may now remove this code snippet if desired.</p>';
+        } else {
+            $form_post = ( function_exists( 'wpmem_admin_form_post_url' ) ) ? wpmem_admin_form_post_url() : '';
+            echo "<p>This process will mark all existing user accounts as activated in WP-Members.<br />It will not change any passwords or send any emails to users.";
+            echo '<form name="activate-all-users" id="activate-all-users" method="post" action="' . $form_post . '">';
+            echo '<p><input type="checkbox" name="activate-all-confirm" value="1" /><label for="activate-all-confirm">Activate all users?</label></p>';
+            echo '<p><input type="submit" name="submit" value="Submit" /></p>';
+            echo '</form>';
+        }
+    }
+}
+// End of My_Activate_All_Users_Class
