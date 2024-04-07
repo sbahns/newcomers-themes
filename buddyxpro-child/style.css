@@ -5,3 +5,7 @@
 * Template: buddyx-pro
 * Version: 3.8.7
 */
+
+.site-branding img {
+    min-width: unset;
+}
