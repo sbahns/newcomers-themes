@@ -8,5 +8,5 @@
 
 /* Controls the width of the site image */
 .site-branding img {
-    max-width: unset !important;
+    max-width: 320px;
 }
