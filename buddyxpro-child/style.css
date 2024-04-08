@@ -6,6 +6,7 @@
 * Version: 3.8.7
 */
 
+/* Controls the width of the site image */
 .site-branding img {
     max-width: unset;
 }
