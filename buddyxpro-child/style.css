@@ -7,5 +7,5 @@
 */
 
 .site-branding img {
-    min-width: unset;
+    min-width: unset !important;
 }
