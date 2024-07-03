@@ -4,29 +4,26 @@ jQuery(document).ready(function($) {
     if (typeof morgantown_registration_data !== 'undefined') {
         console.log("Registration data available:", morgantown_registration_data);
         
-        // Map WP-Members fields to WooCommerce checkout fields
+        // Map registration fields to WooCommerce checkout fields
         var fieldMapping = {
             'first_name': '#billing_first_name',
             'last_name': '#billing_last_name',
-            'user_email': '#billing_email',
-            'billing_phone': '#billing_phone'
+            'user_email': '#billing_email'
         };
 
         // Populate fields
-        $.each(fieldMapping, function(wpmemField, wooField) {
-            if (morgantown_registration_data[wpmemField]) {
-                $(wooField).val(morgantown_registration_data[wpmemField]);
-                console.log("Set", wooField, "to", morgantown_registration_data[wpmemField]);
+        $.each(fieldMapping, function(regField, wooField) {
+            if (morgantown_registration_data[regField]) {
+                $(wooField).val(morgantown_registration_data[regField]).trigger('change');
+                console.log("Set", wooField, "to", morgantown_registration_data[regField]);
             } else {
-                console.log("No data for", wpmemField);
+                console.log("No data for", regField);
             }
         });
+
+        // Trigger update of checkout
+        $(document.body).trigger('update_checkout');
     } else {
         console.log("Registration data not available");
     }
-
-    // Debug output of all form fields
-    $('#billing_first_name, #billing_last_name, #billing_email, #billing_phone').each(function() {
-        console.log($(this).attr('id') + " value: " + $(this).val());
-    });
 });
