@@ -4,25 +4,54 @@ jQuery(document).ready(function($) {
     if (typeof morgantown_registration_data !== 'undefined') {
         console.log("Registration data available:", morgantown_registration_data);
         
-        // Map registration fields to WooCommerce checkout fields
-        var fieldMapping = {
-            'first_name': '#billing_first_name',
-            'last_name': '#billing_last_name',
-            'user_email': '#billing_email'
-        };
+        // Function to populate fields
+        function populateCheckoutFields() {
+            var fieldMapping = {
+                'first_name': ['billing-first_name', 'billing_first_name'],
+                'last_name': ['billing-last_name', 'billing_last_name'],
+                'user_email': ['billing-email', 'billing_email', 'email']
+            };
 
-        // Populate fields
-        $.each(fieldMapping, function(regField, wooField) {
-            if (morgantown_registration_data[regField]) {
-                $(wooField).val(morgantown_registration_data[regField]).trigger('change');
-                console.log("Set", wooField, "to", morgantown_registration_data[regField]);
-            } else {
-                console.log("No data for", regField);
-            }
+            Object.keys(fieldMapping).forEach(function(field) {
+                if (morgantown_registration_data[field]) {
+                    var fieldFound = false;
+                    fieldMapping[field].forEach(function(selector) {
+                        var input = $('[id$="' + selector + '"], [name$="' + selector + '"]');
+                        if (input.length) {
+                            input.val(morgantown_registration_data[field]).trigger('change');
+                            console.log("Set", selector, "to", morgantown_registration_data[field]);
+                            fieldFound = true;
+                        }
+                    });
+                    if (!fieldFound) {
+                        console.log("Field not found for", field);
+                    }
+                } else {
+                    console.log("No data for", field);
+                }
+            });
+        }
+
+        // Initial population attempt
+        populateCheckoutFields();
+
+        // Set up a MutationObserver to watch for changes in the DOM
+        var observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    populateCheckoutFields();
+                }
+            });
         });
 
-        // Trigger update of checkout
-        $(document.body).trigger('update_checkout');
+        // Start observing the document body for changes
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        // Additionally, try to populate fields after a short delay
+        setTimeout(populateCheckoutFields, 1000);
+
+        // Add event listener for when blocks are updated
+        $(document).on('wc-blocks-checkout-update-checkout', populateCheckoutFields);
     } else {
         console.log("Registration data not available");
     }
