@@ -51,11 +51,10 @@ if ( get_stylesheet() !== get_template() ) {
 /*---------------------------------
   * Custom Functions
  ---------------------------------*/
- include('custom_functions/gravity-forms-event-submission.php');
  //include('custom_functions/member-details.php');
  include('custom_functions/member-directory.php');
- include('custom_functions/wp-members.php');
- include('custom_functions/woocommerce-functions.php');
+ //include('custom_functions/wp-members.php');
+ //include('custom_functions/woocommerce-functions.php');
 
 
 
