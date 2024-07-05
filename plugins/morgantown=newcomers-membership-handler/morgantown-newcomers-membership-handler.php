@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: Morgantown Newcomers Membership Handler
-Description: Handles membership registration and redirects to WooCommerce checkout
-Version: 3.1
+Description: Adds custom registration fields to WooCommerce checkout and handles membership approval
+Version: 7.0
 Author: Claude
 */
 
@@ -18,152 +18,189 @@ function morgantown_is_woocommerce_active() {
     return class_exists('WooCommerce');
 }
 
-// Prevent WP-Members from creating a user
-function morgantown_prevent_user_creation($fields) {
-    morgantown_debug_log("Preventing WP-Members user creation");
-    
-    // Modify the fields to prevent user creation
-    $fields['ID'] = 0;
-    $fields['username'] = '';
-    $fields['password'] = '';
-    $fields['email'] = '';
-    
-    // Save the data we need for later
-    $registration_data = array(
-        'first_name' => isset($fields['first_name']) ? $fields['first_name'] : '',
-        'last_name' => isset($fields['last_name']) ? $fields['last_name'] : '',
-        'user_email' => isset($fields['user_email']) ? $fields['user_email'] : '',
+// Define custom fields
+function morgantown_get_custom_fields() {
+    return array(
+        'morgantown_spouse_name' => array(
+            'type' => 'text',
+            'label' => 'Spouse/Partner Name',
+            'required' => false,
+            'class' => array('form-row-wide'),
+            'priority' => 100,
+        ),
+        'morgantown_address' => array(
+            'type' => 'text',
+            'label' => 'Address',
+            'required' => true,
+            'class' => array('form-row-wide'),
+            'priority' => 110,
+        ),
+        'morgantown_city' => array(
+            'type' => 'text',
+            'label' => 'City',
+            'required' => true,
+            'class' => array('form-row-wide'),
+            'priority' => 120,
+        ),
+        'morgantown_state' => array(
+            'type' => 'select',
+            'label' => 'State',
+            'required' => true,
+            'class' => array('form-row-wide'),
+            'priority' => 130,
+            'options' => array(
+                'WV' => 'West Virginia',
+                'PA' => 'Pennsylvania',
+                'OH' => 'Ohio',
+                // Add more states as needed
+            ),
+        ),
+        'morgantown_zip' => array(
+            'type' => 'text',
+            'label' => 'ZIP Code',
+            'required' => true,
+            'class' => array('form-row-wide'),
+            'priority' => 140,
+        ),
+        'morgantown_phone' => array(
+            'type' => 'tel',
+            'label' => 'Phone Number',
+            'required' => true,
+            'class' => array('form-row-wide'),
+            'priority' => 150,
+        ),
+        'morgantown_moved_from' => array(
+            'type' => 'text',
+            'label' => 'Moved From',
+            'required' => false,
+            'class' => array('form-row-wide'),
+            'priority' => 160,
+        ),
+        'morgantown_interests' => array(
+            'type' => 'multiselect',
+            'label' => 'Interests',
+            'required' => false,
+            'class' => array('form-row-wide'),
+            'priority' => 170,
+            'options' => array(
+                'book_club' => 'Book Club',
+                'hiking' => 'Hiking',
+                'dining_out' => 'Dining Out',
+                'gardening' => 'Gardening',
+                // Add more interests as needed
+            ),
+        ),
     );
+}
+
+// Add custom fields to WooCommerce checkout
+function morgantown_add_custom_fields_to_checkout($fields) {
+    morgantown_debug_log('Adding custom fields to checkout');
     
-    if (morgantown_is_woocommerce_active() && WC()->session) {
-        WC()->session->set('morgantown_pending_registration', $registration_data);
-        morgantown_debug_log("Registration data saved to session in prevent_user_creation: " . print_r($registration_data, true));
-    } else {
-        morgantown_debug_log("WooCommerce session not available in prevent_user_creation");
+    $custom_fields = morgantown_get_custom_fields();
+    
+    foreach ($custom_fields as $key => $field) {
+        $fields['billing'][$key] = $field;
     }
-    
+
+    morgantown_debug_log('Final checkout fields: ' . print_r($fields, true));
+
     return $fields;
 }
-add_filter('wpmem_register_data', 'morgantown_prevent_user_creation', 99, 1);
+add_filter('woocommerce_checkout_fields', 'morgantown_add_custom_fields_to_checkout', 99);
 
-// Redirect after WP-Members processes the form
-function morgantown_redirect_after_registration($redirect_to) {
-    morgantown_debug_log("morgantown_redirect_after_registration called. Original redirect: $redirect_to");
+// Save custom fields data to order meta
+function morgantown_save_custom_fields_to_order($order_id) {
+    $custom_fields = morgantown_get_custom_fields();
     
-    if (morgantown_is_woocommerce_active()) {
-        $product_id = 18076; // Specific product ID for membership
-        
-        // Save registration data to WooCommerce session
-        $registration_data = array(
-            'first_name' => isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '',
-            'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
-            'user_email' => isset($_POST['user_email']) ? sanitize_email($_POST['user_email']) : '',
-        );
-        
-        if (WC()->session) {
-            WC()->session->set('morgantown_pending_registration', $registration_data);
-            morgantown_debug_log("Registration data saved to session in redirect: " . print_r($registration_data, true));
-            
-            WC()->cart->empty_cart();
-            WC()->cart->add_to_cart($product_id);
-            
-            $checkout_url = wc_get_checkout_url();
-            morgantown_debug_log("Redirecting to Checkout URL: $checkout_url");
-            
-            wp_redirect($checkout_url);
-            exit;
-        } else {
-            morgantown_debug_log("WooCommerce session not available in redirect");
+    foreach ($custom_fields as $key => $field) {
+        if (isset($_POST[$key])) {
+            $value = sanitize_text_field($_POST[$key]);
+            update_post_meta($order_id, '_' . $key, $value);
         }
-    } else {
-        morgantown_debug_log('WooCommerce functions not available in registration redirect');
     }
-    
-    return $redirect_to;
 }
-add_filter('wpmem_register_redirect', 'morgantown_redirect_after_registration', 99, 1);
+add_action('woocommerce_checkout_update_order_meta', 'morgantown_save_custom_fields_to_order');
 
-function morgantown_create_user_after_payment($order_id) {
-    morgantown_debug_log("Payment complete for order ID: $order_id");
+// Create pending user after successful checkout
+function morgantown_create_pending_user($order_id) {
     $order = wc_get_order($order_id);
-    if ($order && $order->is_paid()) {
-        $registration_data = WC()->session->get('morgantown_pending_registration');
-        morgantown_debug_log("Retrieved registration data for user creation: " . print_r($registration_data, true));
-        
-        if ($registration_data) {
-            $random_password = wp_generate_password(12, true);
+    $user_email = $order->get_billing_email();
+    
+    if (!get_user_by('email', $user_email)) {
+        $user_id = wp_create_user($user_email, wp_generate_password(), $user_email);
+        if (!is_wp_error($user_id)) {
+            wp_update_user([
+                'ID' => $user_id,
+                'first_name' => $order->get_billing_first_name(),
+                'last_name' => $order->get_billing_last_name(),
+            ]);
             
-            $user_id = wp_create_user($registration_data['user_email'], $random_password, $registration_data['user_email']);
-            if (!is_wp_error($user_id)) {
-                morgantown_debug_log("User created with ID: $user_id");
-                wp_update_user([
-                    'ID' => $user_id,
-                    'first_name' => $registration_data['first_name'],
-                    'last_name' => $registration_data['last_name'],
-                ]);
-                
-                // Activate user in WP-Members
-                if (function_exists('wpmem_activate_user')) {
-                    wpmem_activate_user($user_id);
-                    morgantown_debug_log("User activated in WP-Members");
+            // Set user role to a custom 'pending_approval' role
+            $user = new WP_User($user_id);
+            $user->set_role('pending_approval');
+            
+            // Save custom fields to user meta
+            $custom_fields = morgantown_get_custom_fields();
+            foreach ($custom_fields as $key => $field) {
+                $value = get_post_meta($order_id, '_' . $key, true);
+                if ($value) {
+                    update_user_meta($user_id, $key, $value);
                 }
-                
-                // Sync with BuddyPress Extended Profile
-                if (function_exists('bp_set_profile_field_data')) {
-                    bp_set_profile_field_data(array(
-                        'field_id' => 1, // Assuming 1 is the field ID for First Name
-                        'user_id' => $user_id,
-                        'value' => $registration_data['first_name']
-                    ));
-                    bp_set_profile_field_data(array(
-                        'field_id' => 2, // Assuming 2 is the field ID for Last Name
-                        'user_id' => $user_id,
-                        'value' => $registration_data['last_name']
-                    ));
-                    morgantown_debug_log("User data synced with BuddyPress Extended Profile");
-                }
-                
-                // Send password to user
-                wp_new_user_notification($user_id, null, 'user');
-                morgantown_debug_log("Password sent to user");
-                
-                // Clear the session data
-                WC()->session->__unset('morgantown_pending_registration');
-                morgantown_debug_log("Session data cleared");
-            } else {
-                morgantown_debug_log("Error creating user: " . $user_id->get_error_message());
             }
-        } else {
-            morgantown_debug_log("No registration data found in session");
-        }
-    } else {
-        morgantown_debug_log("Order not paid or invalid order ID");
-    }
-}
-add_action('woocommerce_payment_complete', 'morgantown_create_user_after_payment');
-
-// Function to output registration data as JavaScript
-function morgantown_output_registration_data() {
-    if (is_checkout() && morgantown_is_woocommerce_active() && WC()->session) {
-        $registration_data = WC()->session->get('morgantown_pending_registration');
-        if ($registration_data) {
-            wp_localize_script('morgantown-checkout', 'morgantown_registration_data', $registration_data);
-            morgantown_debug_log('Registration data passed to JavaScript: ' . print_r($registration_data, true));
-        } else {
-            morgantown_debug_log('No registration data found in session for JavaScript output');
+            
+            update_post_meta($order_id, '_pending_user_id', $user_id);
+            $order->add_order_note(__('Pending user account created. Awaiting admin approval.', 'morgantown-newcomers'));
         }
     }
 }
-add_action('wp_enqueue_scripts', 'morgantown_output_registration_data', 20);
+add_action('woocommerce_order_status_completed', 'morgantown_create_pending_user');
 
-// Function to enqueue JavaScript for populating checkout fields
-function morgantown_enqueue_checkout_script() {
-    if (is_checkout()) {
-        wp_enqueue_script('morgantown-checkout', plugins_url('morgantown-checkout.js', __FILE__), array('jquery'), '1.2', true);
-        morgantown_debug_log('Morgantown checkout script enqueued');
+// Add admin approval option to order actions
+function morgantown_add_order_actions($actions) {
+    global $theorder;
+    
+    if (!$theorder) {
+        return $actions;
+    }
+    
+    $pending_user_id = get_post_meta($theorder->get_id(), '_pending_user_id', true);
+    if ($pending_user_id) {
+        $actions['morgantown_approve_membership'] = __('Approve Membership', 'morgantown-newcomers');
+    }
+    
+    return $actions;
+}
+add_filter('woocommerce_order_actions', 'morgantown_add_order_actions');
+
+// Handle admin approval
+function morgantown_handle_approval($order) {
+    $pending_user_id = get_post_meta($order->get_id(), '_pending_user_id', true);
+    if ($pending_user_id) {
+        $user = new WP_User($pending_user_id);
+        $user->set_role('subscriber'); // Or your desired member role
+        
+        // Send welcome email
+        wp_new_user_notification($pending_user_id, null, 'user');
+        
+        $order->add_order_note(__('Membership approved and user account activated.', 'morgantown-newcomers'));
+        delete_post_meta($order->get_id(), '_pending_user_id');
     }
 }
-add_action('wp_enqueue_scripts', 'morgantown_enqueue_checkout_script');
+add_action('woocommerce_order_action_morgantown_approve_membership', 'morgantown_handle_approval');
+
+// Restrict access for pending users
+function morgantown_restrict_pending_users($user) {
+    if ($user && in_array('pending_approval', $user->roles)) {
+        wp_redirect(home_url('/pending-approval'));
+        exit;
+    }
+}
+add_action('wp', function() {
+    if (!is_admin() && !empty($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], 'pending-approval') === false) {
+        morgantown_restrict_pending_users(wp_get_current_user());
+    }
+});
 
 // Log that the plugin has been loaded
 morgantown_debug_log('Morgantown Newcomers Membership Handler plugin loaded');
